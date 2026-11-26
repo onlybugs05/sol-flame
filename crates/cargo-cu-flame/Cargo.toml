@@ -5,6 +5,7 @@ edition.workspace = true
 authors.workspace = true
 license.workspace = true
 description = "CLI tool and Cargo subcommand for Solana Compute Unit & memory flamegraph profiling"
+default-run = "cargo-cu-flame"
 
 [lib]
 name = "cargo_cu_flame"

@@ -127,7 +127,8 @@ impl FlameRenderer {
 /// - Heap / Bump Allocator: Warning Amber/Yellow (#eab308, #f59e0b)
 /// - Native Program logic: Solana Cyan/Blue (#14F195, #3b82f6)
 fn apply_solana_palette_styling(svg: &str) -> String {
-    // Add custom Solana branding badge and enhanced stylesheet into the SVG header
+    use sol_flame_core::FrameCategory;
+
     let solana_badge = r##"
     <defs>
       <linearGradient id="solanaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -137,18 +138,100 @@ fn apply_solana_palette_styling(svg: &str) -> String {
     </defs>
     "##;
 
-    if let Some(pos) = svg.find("<svg") {
+    let mut output = String::with_capacity(svg.len() + 2048);
+
+    // 1. Insert header gradient badge
+    let body_start = if let Some(pos) = svg.find("<svg") {
         if let Some(tag_end) = svg[pos..].find('>') {
             let insert_point = pos + tag_end + 1;
-            let mut enhanced = String::with_capacity(svg.len() + 1024);
-            enhanced.push_str(&svg[..insert_point]);
-            enhanced.push_str(solana_badge);
-            enhanced.push_str(&svg[insert_point..]);
-            return enhanced;
+            output.push_str(&svg[..insert_point]);
+            output.push_str(solana_badge);
+            insert_point
+        } else {
+            0
+        }
+    } else {
+        0
+    };
+
+    let remainder = &svg[body_start..];
+
+    // 2. Process each <g>...</g> frame block to apply semantic coloring
+    let mut cursor = 0;
+    while let Some(g_start) = remainder[cursor..].find("<g>") {
+        let abs_g_start = cursor + g_start;
+        output.push_str(&remainder[cursor..abs_g_start]);
+
+        let block_slice = &remainder[abs_g_start..];
+        if let Some(g_end) = block_slice.find("</g>") {
+            let abs_g_end = abs_g_start + g_end + 4;
+            let g_content = &remainder[abs_g_start..abs_g_end];
+
+            // Extract function symbol from <title>...</title>
+            let styled_g = if let Some(t_start) = g_content.find("<title>") {
+                if let Some(t_end) = g_content[t_start..].find("</title>") {
+                    let title_text = &g_content[t_start + 7..t_start + t_end];
+                    // Strip the " (X Compute Units, Y%)" suffix
+                    let symbol_name = if let Some(paren_idx) = title_text.rfind(" (") {
+                        title_text[..paren_idx].trim()
+                    } else {
+                        title_text.trim()
+                    };
+
+                    let hex_color = if symbol_name.eq_ignore_ascii_case("all") {
+                        "#64748b" // Neutral slate for root summary frame
+                    } else {
+                        let category = FrameCategory::classify(symbol_name);
+                        match category {
+                            FrameCategory::Native => "#3b82f6",         // Solana Blue
+                            FrameCategory::Deserialization => "#f97316", // Warm Orange/Red
+                            FrameCategory::Cpi => "#9333ea",             // Royal Purple
+                            FrameCategory::Syscall => "#06b6d4",         // Cyan
+                            FrameCategory::HeapAlloc => "#eab308",       // Warning Amber/Yellow
+                        }
+                    };
+
+                    // Replace fill="rgb(...)" with fill="{hex_color}" in the rect
+                    if let Some(rect_start) = g_content.find("<rect ") {
+                        if let Some(fill_start) = g_content[rect_start..].find("fill=\"") {
+                            let abs_fill_start = rect_start + fill_start + 6;
+                            if let Some(fill_end) = g_content[abs_fill_start..].find('"') {
+                                let abs_fill_end = abs_fill_start + fill_end;
+                                let mut colored = String::with_capacity(g_content.len() + 16);
+                                colored.push_str(&g_content[..abs_fill_start]);
+                                colored.push_str(hex_color);
+                                colored.push_str(&g_content[abs_fill_end..]);
+                                colored
+                            } else {
+                                g_content.to_string()
+                            }
+                        } else {
+                            g_content.to_string()
+                        }
+                    } else {
+                        g_content.to_string()
+                    }
+                } else {
+                    g_content.to_string()
+                }
+            } else {
+                g_content.to_string()
+            };
+
+            output.push_str(&styled_g);
+            cursor = abs_g_end;
+        } else {
+            output.push_str(&remainder[abs_g_start..]);
+            cursor = remainder.len();
+            break;
         }
     }
 
-    svg.to_string()
+    if cursor < remainder.len() {
+        output.push_str(&remainder[cursor..]);
+    }
+
+    output
 }
 
 #[cfg(test)]
@@ -169,6 +252,10 @@ mod tests {
         assert!(svg.contains("</svg>"));
         assert!(svg.contains("Compute Units"));
         assert!(svg.contains("borsh_deser"));
+        // Verify Solana semantic palette colors are applied
+        assert!(svg.contains("#9333ea")); // CPI purple
+        assert!(svg.contains("#f97316")); // Deser orange
+        assert!(svg.contains("#3b82f6")); // Native blue
     }
 
     #[test]

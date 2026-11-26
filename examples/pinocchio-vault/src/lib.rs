@@ -19,6 +19,7 @@ impl VaultZeroCopy {
             return None;
         }
         let ptr = data.as_ptr();
+        #[allow(clippy::manual_is_multiple_of)]
         if (ptr as usize) % std::mem::align_of::<Self>() != 0 {
             // Unaligned pointer would cause Undefined Behavior if dereferenced as &Self
             return None;
