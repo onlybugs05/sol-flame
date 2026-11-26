@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/badge/license-Apache%202.0%20%2F%20MIT-blue.svg)](LICENSE)
 [![Solana](https://img.shields.io/badge/Solana-sBPF%20%2F%20SVM-14F195.svg)](https://solana.com)
 [![Engine](https://img.shields.io/badge/Engine-mollusk--svm-purple.svg)](https://github.com/anza-xyz/mollusk)
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/onlybugs05/sol-flame/actions)
 [![Tests](https://img.shields.io/badge/tests-16%20passed-success.svg)]()
 
 ---
@@ -32,7 +32,12 @@ Solana transactions have a hard Compute Unit (CU) limit (200,000 CU default; up 
 </p>
 
 <p align="center">
-  <a href="https://onlybugs05.github.io/sol-flame/">👉 <strong>Open Live Interactive Web Demo (Click to Zoom & Inspect)</strong></a>
+  <a href="https://onlybugs05.github.io/sol-flame/">
+    <img src="https://img.shields.io/badge/Live%20Demo-Interactive%20Flamegraph-14F195?style=for-the-badge&logo=solana&logoColor=black" alt="Live Interactive Demo" />
+  </a>
+</p>
+<p align="center">
+  🔥 <strong><a href="https://onlybugs05.github.io/sol-flame/">Open Live Interactive Web Demo</a></strong> &mdash; zoom into frames, inspect micro-instruction percentages, and search execution bottlenecks directly in your browser.
 </p>
 
 ```
@@ -84,7 +89,7 @@ Solana transactions have a hard Compute Unit (CU) limit (200,000 CU default; up 
 ### 1. Clone & Build from Source
 
 ```bash
-git clone https://github.com/sol-flame/sol-flame.git
+git clone https://github.com/onlybugs05/sol-flame.git
 cd sol-flame
 
 # Build workspace binaries in release mode
@@ -284,13 +289,13 @@ cargo clippy --all-targets -- -D warnings
 
 ## 📖 In-Depth Documentation
 
-For detailed technical specifications, explore the [docs/](file:///home/hrushikesh/sol-flame/docs/) directory:
-- [Architecture Manual](file:///home/hrushikesh/sol-flame/docs/ARCHITECTURE.md)
-- [CLI Reference Manual](file:///home/hrushikesh/sol-flame/docs/CLI_REFERENCE.md)
-- [DWARF Symbolication Deep Dive](file:///home/hrushikesh/sol-flame/docs/DWARF_SYMBOLICATION.md)
-- [CI/CD Performance Gating](file:///home/hrushikesh/sol-flame/docs/CI_CD_INTEGRATION.md)
-- [32KB Heap Sentinel Guide](file:///home/hrushikesh/sol-flame/docs/HEAP_SENTINEL.md)
-- [Anchor vs Pinocchio Benchmarks](file:///home/hrushikesh/sol-flame/docs/BENCHMARKS.md)
+For detailed technical specifications, explore the [`docs/`](docs/) directory:
+- [Architecture Manual](docs/ARCHITECTURE.md) &mdash; In-process Mollusk-SVM execution loop, sBPF instruction hooks, and stack aggregation.
+- [CLI Reference Manual](docs/CLI_REFERENCE.md) &mdash; Comprehensive command-line interface specification and JSON export schemas.
+- [DWARF Symbolication Deep Dive](docs/DWARF_SYMBOLICATION.md) &mdash; How `sol-flame` maps virtual program counters back to Rust source lines.
+- [CI/CD Performance Gating](docs/CI_CD_INTEGRATION.md) &mdash; GitHub Actions configuration, regression thresholds, and automated PR gates.
+- [32KB Heap Sentinel Guide](docs/HEAP_SENTINEL.md) &mdash; Runtime bump allocator tracking and Solana 32KB heap boundary enforcement.
+- [Anchor vs Pinocchio Benchmarks](docs/BENCHMARKS.md) &mdash; Empirical case study demonstrating >57% CU reduction via zero-copy optimization.
 
 ---
 

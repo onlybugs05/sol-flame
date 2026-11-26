@@ -255,7 +255,7 @@ text { font-family:monospace; font-size:12px }
         var xpad = 10;
         var inverted = false;
         var searchcolor = 'rgb(230,0,230)';
-        var fluiddrawing = true;
+        var fluiddrawing = false;
         var truncate_text_right = false;
     ]]><![CDATA["use strict";
 var details, searchbtn, unzoombtn, matchedtxt, svg, searching, frames, known_font_width;
@@ -750,6 +750,14 @@ function format_percent(n) {
         <h3>⚡ CI/CD GitHub Action</h3>
         <p>Automated CU regression thresholds and PR budget enforcement in GitHub Actions.</p>
       </a>
+      <a class="doc-link" href="https://github.com/onlybugs05/sol-flame/blob/main/docs/CLI_REFERENCE.md" target="_blank">
+        <h3>💻 CLI Reference Manual</h3>
+        <p>Comprehensive reference for commands, flags, threshold comparisons, and JSON schemas.</p>
+      </a>
+      <a class="doc-link" href="https://github.com/onlybugs05/sol-flame/blob/main/docs/BENCHMARKS.md" target="_blank">
+        <h3>📊 Anchor vs Pinocchio</h3>
+        <p>Empirical performance analysis demonstrating &gt;57% CU savings with zero-copy deserialization.</p>
+      </a>
     </div>
   </div>
 
@@ -758,5 +766,14 @@ function format_percent(n) {
     <p style="margin-top: 6px;">Lead Developer: Hrushikesh Jetti (<a href="https://github.com/onlybugs05" style="color: var(--primary);">@onlybugs05</a>)</p>
   </footer>
 
+  <script>
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", function() {
+        if (typeof init === "function") { try { init(); } catch (e) {} }
+      });
+    } else {
+      if (typeof init === "function") { try { init(); } catch (e) {} }
+    }
+  </script>
 </body>
 </html>
