@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sol-flame | Interactive Solana CU & Memory Flamegraph Profiler</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔥</text></svg>">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: #111827;
+      --border: #1f2937;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --primary: #14F195;
+      --accent: #9945FF;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 24px;
+    }
+    header {
+      max-width: 1200px;
+      margin: 0 auto 24px auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 20px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand h1 {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .tagline {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+    .links a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+      margin-left: 16px;
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+    .links a:hover {
+      background: rgba(20, 241, 149, 0.1);
+      border-color: var(--primary);
+    }
+    .stats-grid {
+      max-width: 1200px;
+      margin: 0 auto 24px auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+    }
+    .stat-label {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .stat-value {
+      font-size: 26px;
+      font-weight: 700;
+      margin-top: 6px;
+      color: #fff;
+    }
+    .stat-badge {
+      display: inline-block;
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      margin-top: 8px;
+      font-weight: 600;
+    }
+    .badge-green { background: rgba(20, 241, 149, 0.15); color: var(--primary); }
+    .badge-purple { background: rgba(153, 69, 255, 0.15); color: #c084fc; }
+    .viewer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+    .viewer-header {
+      padding: 16px 20px;
+      background: #161e2e;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .viewer-title {
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .svg-wrapper {
+      padding: 24px;
+      display: flex;
+      justify-content: center;
+      overflow-x: auto;
+    }
+    .svg-wrapper img {
+      max-width: 100%;
+      height: auto;
+    }
+    footer {
+      max-width: 1200px;
+      margin: 40px auto 10px auto;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <span style="font-size: 32px;">🔥</span>
+      <div>
+        <h1>sol-flame</h1>
+        <p class="tagline">Interactive sBPF Compute Unit & Memory Flamegraph Profiler for Solana</p>
+      </div>
+    </div>
+    <div class="links">
+      <a href="https://github.com/onlybugs05/sol-flame" target="_blank">⭐ GitHub Repository</a>
+      <a href="https://crates.io" target="_blank">📦 Cargo Crate</a>
+    </div>
+  </header>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Instruction Profiled</div>
+      <div class="stat-value">deposit</div>
+      <span class="stat-badge badge-purple">Anchor Context</span>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Compute Units</div>
+      <div class="stat-value">48,190 CU</div>
+      <span class="stat-badge badge-green">24.1% of 200k Limit</span>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Peak Heap Allocation</div>
+      <div class="stat-value">4.2 KB</div>
+      <span class="stat-badge badge-green">13.1% of 32 KB Max</span>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">In-Memory Engine</div>
+      <div class="stat-value">&lt; 15 ms</div>
+      <span class="stat-badge badge-purple">mollusk-svm</span>
+    </div>
+  </div>
+
+  <div class="viewer-container">
+    <div class="viewer-header">
+      <div class="viewer-title">
+        <span>📊</span> Live Rendered SVG Flamegraph
+      </div>
+      <span style="font-size: 12px; color: var(--text-muted);">Semantic: Blue = Logic | Orange = Borsh Deser | Purple = CPI</span>
+    </div>
+    <div class="svg-wrapper">
+      <img src="../assets/flamegraph.svg" alt="sol-flame SVG Flamegraph">
+    </div>
+  </div>
+
+  <footer>
+    <p>Released under Apache 2.0 / MIT as an open-source public good for the Solana developer ecosystem.</p>
+    <p style="margin-top: 6px;">Lead Developer: Hrushikesh Jetti (<a href="https://github.com/onlybugs05" style="color: var(--primary);">@onlybugs05</a>)</p>
+  </footer>
+
+</body>
+</html>
