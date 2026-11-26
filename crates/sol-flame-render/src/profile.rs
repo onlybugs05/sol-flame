@@ -97,11 +97,22 @@ pub struct CiRegressionReport {
 
 impl CiRegressionReport {
     pub fn compare(base: &CuProfile, current: &CuProfile, max_allowed_percent: f64) -> Self {
-        let diff_cu = current.total_cu as i64 - base.total_cu as i64;
-        let percent_change = if base.total_cu > 0 {
-            (diff_cu as f64 / base.total_cu as f64) * 100.0
+        let (diff_cu, percent_change) = if current.total_cu >= base.total_cu {
+            let delta = current.total_cu - base.total_cu;
+            let pct = if base.total_cu > 0 {
+                (delta as f64 / base.total_cu as f64) * 100.0
+            } else {
+                0.0
+            };
+            (delta.min(i64::MAX as u64) as i64, pct)
         } else {
-            0.0
+            let delta = base.total_cu - current.total_cu;
+            let pct = if base.total_cu > 0 {
+                -((delta as f64 / base.total_cu as f64) * 100.0)
+            } else {
+                0.0
+            };
+            (-(delta.min(i64::MAX as u64) as i64), pct)
         };
 
         let passed = percent_change <= max_allowed_percent;

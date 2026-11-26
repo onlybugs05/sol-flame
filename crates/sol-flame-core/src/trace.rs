@@ -79,12 +79,11 @@ impl CallFrame {
 
     pub fn complete(&mut self, exit_cu: u64) {
         self.exit_cu = Some(exit_cu);
-        if self.entry_cu >= exit_cu {
-            self.delta_cu = self.entry_cu - exit_cu;
+        self.delta_cu = if self.entry_cu >= exit_cu {
+            self.entry_cu.saturating_sub(exit_cu)
         } else {
-            // If meter counts up instead of down
-            self.delta_cu = exit_cu - self.entry_cu;
-        }
+            exit_cu.saturating_sub(self.entry_cu)
+        };
     }
 }
 

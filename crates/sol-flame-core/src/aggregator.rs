@@ -42,7 +42,7 @@ impl FoldedStackAggregator {
 
     /// Ingest a completed `ExecutionTrace`
     pub fn aggregate_trace(&mut self, trace: &ExecutionTrace) {
-        self.total_cu += trace.total_cu_consumed;
+        self.total_cu = self.total_cu.saturating_add(trace.total_cu_consumed);
         if trace.peak_heap_bytes > self.peak_heap {
             self.peak_heap = trace.peak_heap_bytes;
         }
@@ -86,13 +86,13 @@ impl FoldedStackAggregator {
     /// Add an explicit folded stack trace line (e.g. "entrypoint;borsh_deser 28540")
     pub fn add_folded_line(&mut self, stack_str: &str, count: u64) {
         *self.folded_counts.entry(stack_str.to_string()).or_insert(0) += count;
-        self.total_cu += count;
+        self.total_cu = self.total_cu.saturating_add(count);
 
         let parts: Vec<&str> = stack_str.split(';').collect();
         if let Some(leaf) = parts.last() {
             let cat = FrameCategory::classify(leaf);
             let entry = self.symbol_cu_map.entry(leaf.to_string()).or_insert((0, None, cat));
-            entry.0 += count;
+            entry.0 = entry.0.saturating_add(count);
         }
     }
 
@@ -134,7 +134,7 @@ impl FoldedStackAggregator {
             })
             .collect();
 
-        list.sort_by(|a, b| b.cu.cmp(&a.cu));
+        list.sort_by_key(|a| std::cmp::Reverse(a.cu));
         list.truncate(limit);
         list
     }

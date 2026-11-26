@@ -5,6 +5,10 @@ members = [
     "crates/sol-flame-mollusk",
     "crates/cargo-cu-flame",
 ]
+exclude = [
+    "examples/anchor-escrow",
+    "examples/pinocchio-vault",
+]
 resolver = "2"
 
 [workspace.package]

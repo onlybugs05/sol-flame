@@ -163,6 +163,7 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn run_profile(
     instruction: &str,
     elf_path: Option<&Path>,
@@ -256,6 +257,14 @@ pub fn dump_symbols(elf_path: &Path) -> Result<(), Box<dyn std::error::Error>> {
 pub fn run_compare(base: &Path, current: &Path, threshold: f64) -> Result<(), Box<dyn std::error::Error>> {
     let base_prof = CuProfile::load_from_file(base)?;
     let curr_prof = CuProfile::load_from_file(current)?;
+
+    if base_prof.instruction != curr_prof.instruction {
+        eprintln!(
+            "⚠️  Warning: Comparing profiles for different instructions ('{}' vs '{}')",
+            base_prof.instruction, curr_prof.instruction
+        );
+    }
+
     let report = CiRegressionReport::compare(&base_prof, &curr_prof, threshold);
 
     println!("\n╔══════════════════════════════════════════════════════════════════════════════╗");

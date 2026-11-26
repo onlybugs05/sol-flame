@@ -76,31 +76,57 @@ impl TerminalPresenter {
 }
 
 fn pad_right(s: &str, width: usize) -> String {
-    if s.len() >= width {
+    let char_count = s.chars().count();
+    if char_count >= width {
         s.to_string()
     } else {
-        format!("{}{}", s, " ".repeat(width - s.len()))
+        format!("{}{}", s, " ".repeat(width - char_count))
     }
 }
 
-fn truncate_str(s: &str, max_len: usize) -> String {
-    if s.len() <= max_len {
+/// Safely truncates a string to at most `max_chars` UTF-8 characters without panicking.
+fn truncate_str(s: &str, max_chars: usize) -> String {
+    let char_count = s.chars().count();
+    if char_count <= max_chars {
         s.to_string()
     } else {
-        format!("{}…", &s[..max_len - 1])
+        let take_count = max_chars.saturating_sub(1);
+        let prefix: String = s.chars().take(take_count).collect();
+        format!("{}…", prefix)
     }
 }
 
 fn format_number(n: u64) -> String {
     let s = n.to_string();
     let mut result = String::new();
-    let mut count = 0;
-    for c in s.chars().rev() {
+    for (count, c) in s.chars().rev().enumerate() {
         if count > 0 && count % 3 == 0 {
             result.push(',');
         }
         result.push(c);
-        count += 1;
     }
     result.chars().rev().collect()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_unicode_truncation_no_panic() {
+        // Multi-byte emoji (4 bytes) and non-ASCII characters
+        let s = "anchor_lang::AccountDeserialize::🦀_deser_日本語";
+        // Should truncate cleanly without slicing across character boundary
+        for max in 1..s.len() + 10 {
+            let truncated = truncate_str(s, max);
+            assert!(truncated.chars().count() <= max);
+        }
+    }
+
+    #[test]
+    fn test_pad_right_unicode() {
+        let s = "🦀_test";
+        let padded = pad_right(s, 10);
+        assert_eq!(padded.chars().count(), 10);
+    }
 }

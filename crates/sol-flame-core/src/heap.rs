@@ -49,12 +49,12 @@ impl HeapMonitor {
 
     /// Record a bump allocation of `bytes` bytes.
     pub fn allocate(&mut self, bytes: u64) -> u64 {
-        let addr = self.start_addr + self.current_offset;
-        self.current_offset += bytes;
+        let addr = self.start_addr.saturating_add(self.current_offset);
+        self.current_offset = self.current_offset.saturating_add(bytes);
         if self.current_offset > self.peak_offset {
             self.peak_offset = self.current_offset;
         }
-        self.allocation_count += 1;
+        self.allocation_count = self.allocation_count.saturating_add(1);
         addr
     }
 
@@ -79,6 +79,9 @@ impl HeapMonitor {
     }
 
     pub fn percent_used(&self) -> f64 {
+        if self.max_size == 0 {
+            return 0.0;
+        }
         (self.peak_offset as f64 / self.max_size as f64) * 100.0
     }
 

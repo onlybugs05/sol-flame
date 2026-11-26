@@ -6,9 +6,10 @@ use sol_flame_core::FoldedStackAggregator;
 use crate::{FlameRenderError, Result};
 
 /// Color palette theme for SVG flamegraph rendering.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum PaletteKind {
     /// Solana themed: Blue (Native/Math), Orange/Red (Borsh/Anchor Deserialization), Purple (CPI), Yellow (Heap)
+    #[default]
     Solana,
     /// Inferno standard palettes
     Hot,
@@ -20,12 +21,6 @@ pub enum PaletteKind {
     Aqua,
     Yellow,
     Purple,
-}
-
-impl Default for PaletteKind {
-    fn default() -> Self {
-        PaletteKind::Solana
-    }
 }
 
 /// Renders folded stack profiles into interactive SVG flamegraphs.
@@ -142,7 +137,7 @@ fn apply_solana_palette_styling(svg: &str) -> String {
     </defs>
     "##;
 
-    if let Some(pos) = svg.find("<svg ") {
+    if let Some(pos) = svg.find("<svg") {
         if let Some(tag_end) = svg[pos..].find('>') {
             let insert_point = pos + tag_end + 1;
             let mut enhanced = String::with_capacity(svg.len() + 1024);
@@ -174,5 +169,18 @@ mod tests {
         assert!(svg.contains("</svg>"));
         assert!(svg.contains("Compute Units"));
         assert!(svg.contains("borsh_deser"));
+    }
+
+    #[test]
+    fn test_xss_escaping_in_title() {
+        let mut agg = FoldedStackAggregator::new();
+        agg.add_folded_line("entrypoint;math", 100);
+
+        let renderer = FlameRenderer::new("<script>alert('xss')</script>");
+        let svg = renderer.render_aggregator(&agg).expect("svg should render");
+
+        // Must not contain raw script tag
+        assert!(!svg.contains("<script>alert"));
+        assert!(svg.contains("&lt;script&gt;alert"));
     }
 }

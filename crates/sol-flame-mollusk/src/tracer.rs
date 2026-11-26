@@ -173,11 +173,7 @@ impl MolluskComputeTracer {
             self.pop_frame(0);
         }
 
-        let total_consumed = if self.initial_cu >= self.remaining_cu {
-            self.initial_cu - self.remaining_cu
-        } else {
-            0
-        };
+        let total_consumed = self.initial_cu.saturating_sub(self.remaining_cu);
 
         ExecutionTrace {
             instruction_name: self.instruction_name,

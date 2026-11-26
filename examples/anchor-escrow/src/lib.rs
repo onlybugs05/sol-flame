@@ -38,8 +38,14 @@ pub fn deposit(
     let fee = math::calculate_deposit_fee(amount, vault.fee_numerator, vault.fee_denominator);
     let net = amount.saturating_sub(fee);
 
-    user.deposited_amount += net;
-    vault.total_locked += net;
+    user.deposited_amount = user
+        .deposited_amount
+        .checked_add(net)
+        .ok_or_else(|| "User deposit arithmetic overflow".to_string())?;
+    vault.total_locked = vault
+        .total_locked
+        .checked_add(net)
+        .ok_or_else(|| "Vault total locked arithmetic overflow".to_string())?;
 
     Ok((user, vault, fee))
 }

@@ -276,7 +276,7 @@ impl DwarfSymbolResolver {
                                     gimli::AttributeValue::Addr(addr) => high_pc = Some(addr),
                                     gimli::AttributeValue::Udata(size) => {
                                         if let Some(low) = low_pc {
-                                            high_pc = Some(low + size);
+                                            high_pc = Some(low.saturating_add(size));
                                         }
                                     }
                                     _ => {}
@@ -297,16 +297,18 @@ impl DwarfSymbolResolver {
                     }
 
                     if let (Some(sym_name), Some(start), Some(end)) = (name, low_pc, high_pc) {
-                        let location = if let (Some(f_idx), Some(line)) = (file_idx, line_no) {
-                            resolve_dwarf_filename(&dwarf, &unit, f_idx).map(|f| SourceLocation {
-                                file: f,
-                                line,
-                                column: 0,
-                            })
-                        } else {
-                            None
-                        };
-                        symbol_map.insert_range(start, end, sym_name, location);
+                        if start < end {
+                            let location = if let (Some(f_idx), Some(line)) = (file_idx, line_no) {
+                                resolve_dwarf_filename(&dwarf, &unit, f_idx).map(|f| SourceLocation {
+                                    file: f,
+                                    line,
+                                    column: 0,
+                                })
+                            } else {
+                                None
+                            };
+                            symbol_map.insert_range(start, end, sym_name, location);
+                        }
                     }
                 }
             }
