@@ -31,6 +31,10 @@ Solana transactions have a hard Compute Unit (CU) limit (200,000 CU default; up 
   <img src="assets/flamegraph.svg" alt="sol-flame Interactive Flamegraph Preview" width="100%" />
 </p>
 
+<p align="center">
+  <a href="https://onlybugs05.github.io/sol-flame/">👉 <strong>Open Live Interactive Web Demo (Click to Zoom & Inspect)</strong></a>
+</p>
+
 ```
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
 │                              entrypoint (48,190 CU Total)                              │
