@@ -14,7 +14,7 @@ pub enum ProfileScenario {
 }
 
 /// In-process SVM execution simulation & profile generator.
-/// Allows developers and grant reviewers to profile Solana instructions immediately
+/// Allows developers and CI workflows to profile Solana instructions immediately
 /// without requiring a live validator or external test cluster.
 pub struct SvmInstructionSimulator;
 

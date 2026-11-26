@@ -85,8 +85,6 @@ sol-flame/
 ├── Cargo.toml
 ├── README.md                           # This document
 ├── ARCHITECTURE.md                     # Systems design & execution hooking spec
-├── SOLO_GRANTS_APPLICATION.md          # Ready application for sologrants.com ($720)
-├── SOLANA_FOUNDATION_GRANT_PROPOSAL.md # $18,000 public good proposal
 ├── crates/
 │   ├── sol-flame-core/                 # DWARF parser, sBPF tracer, stack aggregator
 │   ├── sol-flame-mollusk/              # In-memory execution hook & CU accounting
@@ -95,4 +93,5 @@ sol-flame/
 └── examples/
     ├── anchor-escrow/                  # Sample Anchor project with CU benchmarks
     └── pinocchio-vault/                # Pinocchio zero-copy comparison example
+
 ```
