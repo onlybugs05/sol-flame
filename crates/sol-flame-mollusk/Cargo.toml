@@ -1,0 +1,17 @@
+[package]
+name = "sol-flame-mollusk"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "In-memory SVM execution tracer, compute meter hooks, and 32KB heap sentinel for sol-flame"
+
+[dependencies]
+sol-flame-core = { workspace = true }
+serde.workspace = true
+thiserror.workspace = true
+mollusk-svm = { version = "0.17", optional = true }
+
+[features]
+default = []
+mollusk = ["dep:mollusk-svm"]

@@ -1,0 +1,8 @@
+[package]
+name = "pinocchio-vault"
+version = "0.1.0"
+edition = "2021"
+description = "Pinocchio zero-copy vault example showcasing 75% CU savings"
+
+[lib]
+crate-type = ["cdylib", "lib"]

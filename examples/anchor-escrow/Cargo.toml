@@ -1,0 +1,11 @@
+[package]
+name = "anchor-escrow"
+version = "0.1.0"
+edition = "2021"
+description = "Sample Anchor Escrow program used for sol-flame CU benchmarks"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+
+[dependencies]
+borsh = "1.5"

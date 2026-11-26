@@ -1,0 +1,14 @@
+[package]
+name = "sol-flame-render"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Interactive SVG flamegraph renderer, terminal summary, and JSON profiler for sol-flame"
+
+[dependencies]
+sol-flame-core = { workspace = true }
+inferno.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true

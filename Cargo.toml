@@ -1,0 +1,29 @@
+[workspace]
+members = [
+    "crates/sol-flame-core",
+    "crates/sol-flame-render",
+    "crates/sol-flame-mollusk",
+    "crates/cargo-cu-flame",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["sol-flame contributors"]
+license = "Apache-2.0 OR MIT"
+
+[workspace.dependencies]
+sol-flame-core = { path = "crates/sol-flame-core" }
+sol-flame-render = { path = "crates/sol-flame-render" }
+sol-flame-mollusk = { path = "crates/sol-flame-mollusk" }
+
+gimli = "0.34"
+object = "0.41"
+inferno = "0.12"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+clap = { version = "4.6", features = ["derive"] }
+rustc-demangle = "0.1"
+thiserror = "2.0"
+
