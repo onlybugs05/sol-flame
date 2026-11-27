@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: "💬 Solana Developer Discussions"
+    url: "https://github.com/onlybugs05/sol-flame/discussions"
+    about: "Ask questions, share flamegraphs, and discuss CU optimization strategies"
+  - name: "📖 Live Interactive Web Demo"
+    url: "https://onlybugs05.github.io/sol-flame/"
+    about: "Explore sample interactive flamegraphs and documentation online"
